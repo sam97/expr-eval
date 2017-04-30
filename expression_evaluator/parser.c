@@ -1,8 +1,11 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include "helperlib.h"
 #include "lexer.h"
 #include "parser.h"
 
 L_Token adwance();
+void error_routine();
 L_Token parser(int rightBP);
 L_Token nud(L_Token tok);
 L_Token led(L_Token left, L_Token tok);
@@ -14,75 +17,146 @@ L_Token led_mul(L_Token left);
 L_Token led_div(L_Token left);
 L_Token led_pow(L_Token left);
 
-L_Token token;
+static L_Token token;
+static FILE *source;
 
 int parse(String filename) {
-	FILE *source;
 	L_Token res;
-	fpos_t before_pos, after_pos;
+	char s[40];
 
 	if(fopen_s(&source, filename, "r"))
 		return -1;
+	// Initialize lexer.
 	lex_init(source);
+	// Initialise temp file.
+	mktmp();
 
 	while(!feof(source)) {
 		// Parse each line.
-		// token = NULL; //parser(0);
 		token = adwance();
-		if(token && token->t == T_END)
+		if(token == NULL) {
+			error_routine();
+			continue;
+		}
+		if(token->t == T_NEWL) {
+			tmpputs("\n");
+			continue;
+		}
+		if(token->t == T_END)
 			break;
+
 		res = parser(0);
-		// fgetpos(source, &after_pos);
-		if(res == NULL)
-			fprintf(stdout, "Skipped\n");
+		if(res == NULL) {
+			error_routine();
+			continue;
+		}
 
-		// For each line, move file pointer to before '\n' and add result.
-		// fsetpos(source, &before_pos);
-		else if(res->t == T_INT)
-			fprintf(stdout, "=%ld\n", res->v.intval);
+		if(res->t == T_INT)
+			sprintf_s(s, 40 * sizeof(char), "=%ld", res->v.intval);
 		else
-			fprintf(stdout, "=%lf\n", res->v.fltval);
+			sprintf_s(s, 40 * sizeof(char), "=%lf", res->v.fltval);
 
-		// while(token->t != T_NEWL) {
-		// 	token = advance();
-		// }
-
-		token = NULL;
+		tmpputs(s);
+		if(token->t == T_NEWL)
+			tmpputs("\n");
 	}
+
+	// Copy file.
+	fclose(source);
+
+	fopen_s(&source, filename, "w");
+	tmpcopy(source);
+	fclose(source);
+
+	tmpclose();
 }
 
 // Wrapper to the advance function.
 L_Token adwance() {
 	L_Token t;
 	t = advance();
+	if(!t)
+		return NULL;
 
-	if(t && t->t == T_INT) {
+	if(t->t == T_INT) {
 		long int i = atol(t->v.lexeme);
+		tmpputs(t->v.lexeme);
 		free(t->v.lexeme);
 		t->v.intval = i;
 	}
-	else if(t && t->t == T_FLT) {
+	else if(t->t == T_FLT) {
 		long double d = atolf(t->v.lexeme);
+		tmpputs(t->v.lexeme);
 		free(t->v.lexeme);
 		t->v.fltval = d;
+	}
+	else {
+		if(t->t != T_NEWL && t->t != T_END)
+			tmpputs(t->v.lexeme);
+		free(t->v.lexeme);
+		t->v.lexeme = NULL;
 	}
 
 	return t;
 }
 
+// Writes rest of the line to tmpfile.
+void error_routine() {
+	String buf = NULL;
+	int len = 0;
+	char c;
+
+	while((c = fgetc(source)) != '\n' && c >= 0) {
+		buf = (String) realloc(buf, len+1);
+		buf[len] = c;
+		++len;
+	}
+	if (c >= 0) {
+		buf = (String)realloc(buf, len + 1);
+		buf[len] = '\n';
+		++len;
+	}
+	buf = (String)realloc(buf, len + 1);
+	buf[len] = '\0';
+	++len;
+
+	tmpputs(buf);
+	free(buf);
+}
+
 L_Token parser(int rightBP) {
 	L_Token temp, left;
-	if(!token || token->t == T_NEWL || token->t == T_END)
+	if(!token || token->t == T_END)
 		return NULL;
+	if(token->t == T_NEWL) {
+		ungetc('\n', source);
+		return NULL;
+	}
 
 	temp = token;
+
 	token = adwance();
+	if(token == NULL)
+		return NULL;
+
 	left = nud(temp);
+	if(left == NULL)
+		return NULL;
 
 	while(rightBP < token->leftBP) {
 		temp = token;
+
 		token = adwance();
+		if(token == NULL || token->t == T_END)
+			return NULL;
+		if(token->t == T_NEWL) {
+			ungetc('\n', source);
+			return NULL;
+		}
+		
 		left = led(left, temp);
+		if(left == NULL)
+			return NULL;
 	}
 
 	return left;
@@ -100,7 +174,6 @@ L_Token nud(L_Token tok) {
 }
 
 L_Token led(L_Token left, L_Token tok) {
-
 	switch(tok->t) {
 		case T_SUB:
 			return led_sub(left);
@@ -113,6 +186,8 @@ L_Token led(L_Token left, L_Token tok) {
 		case T_POW:
 			return led_pow(left);
 	}
+
+	return NULL;
 }
 
 // Unary minus.
@@ -120,6 +195,9 @@ L_Token nud_sub() {
 	L_Token right;
 
 	right = parser(100);
+	if (right == NULL)
+		return NULL;
+
 	if(right->t == T_INT)
 		right->v.intval = -(right->v.intval);
 	if(right->t == T_FLT)
@@ -133,6 +211,8 @@ L_Token nud_add() {
 	L_Token right;
 
 	right = parser(100);
+	if (right == NULL)
+		return NULL;
 	// if(right->t == T_INT)
 	// 	right->v.intval = -(right->v.intval);
 	// if(right->t == T_FLT)
@@ -146,6 +226,9 @@ L_Token led_sub(L_Token left) {
 	L_Token right;
 
 	right = parser(10);
+	if (right == NULL)
+		return NULL;
+
 	if(left->t == T_FLT) { // left is float
 		if(right->t == T_FLT) { // right is float
 			right->v.fltval = left->v.fltval - right->v.fltval;
@@ -174,6 +257,9 @@ L_Token led_add(L_Token left) {
 	L_Token right;
 
 	right = parser(20);
+	if (right == NULL)
+		return NULL;
+
 	if(left->t == T_FLT) { // left is float
 		if(right->t == T_FLT) { // right is float
 			right->v.fltval = left->v.fltval + right->v.fltval;
@@ -200,6 +286,9 @@ L_Token led_mul(L_Token left) {
 	L_Token right;
 
 	right = parser(40);
+	if (right == NULL)
+		return NULL;
+
 	if(left->t == T_FLT) { // left is float
 		if(right->t == T_FLT) { // right is float
 			right->v.fltval = left->v.fltval * right->v.fltval;
@@ -226,6 +315,9 @@ L_Token led_div(L_Token left) {
 	L_Token right;
 
 	right = parser(30);
+	if (right == NULL)
+		return NULL;
+
 	if(right->t == T_FLT) { // right is float
 		if(right->v.fltval == 0)
 			// TODO: Destroy right.
@@ -270,6 +362,8 @@ L_Token led_pow(L_Token left) {
 	L_Token right;
 
 	right = parser(50 - 1);
+	if (right == NULL)
+		return NULL;
 
 	if(right->t == T_INT) { // right is int.
 		if(left->t == T_INT) { // left is int.

@@ -45,24 +45,24 @@ int main(int argc, char const *argv[]) {
 	// while(1) {
 	// 	token = advance();
 	// 	if (token == NULL || token->t == T_END) {
-	// 		printf("END ");
+	// 		printf("END(%s) ", token->v.lexeme);
 	// 		break;
 	// 	}
 	// 	switch (token->t) {
 	// 	case T_MUL:
-	// 		printf("T_MUL ");
+	// 		printf("T_MUL(%s) ", token->v.lexeme);
 	// 		break;
 	// 	case T_ADD:
-	// 		printf("T_ADD ");
+	// 		printf("T_ADD(%s) ", token->v.lexeme);
 	// 		break;
 	// 	case T_SUB:
-	// 		printf("T_SUB ");
+	// 		printf("T_SUB(%s) ", token->v.lexeme);
 	// 		break;
 	// 	case T_POW:
-	// 		printf("T_POW ");
+	// 		printf("T_POW(%s) ", token->v.lexeme);
 	// 		break;
 	// 	case T_DIV:
-	// 		printf("T_DIV ");
+	// 		printf("T_DIV(%s) ", token->v.lexeme);
 	// 		break;
 	// 	case T_INT:
 	// 		printf("T_INT(%s) ", token->v.lexeme);
@@ -71,10 +71,10 @@ int main(int argc, char const *argv[]) {
 	// 		printf("T_FLT(%s) ", token->v.lexeme);
 	// 		break;
 	// 	case T_NEWL:
-	// 		printf("T_NEWL ");
+	// 		printf("T_NEWL(%s) ", token->v.lexeme);
 	// 		break;
 	// 	case T_END:
-	// 		printf("T_END ");
+	// 		printf("T_END(%s) ", token->v.lexeme);
 	// 		break;
 	// 	default:
 	// 		printf("ERR ");

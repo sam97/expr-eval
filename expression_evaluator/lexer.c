@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include "helperlib.h"
 #include "lexer.h"
 
@@ -55,8 +57,10 @@ L_Token advance() {
 	String lexeme = NULL;
 	char temp;
 
-	if(fgetpos(source, &last_pos))
+	if(fgetpos(source, &last_pos)) {
+		free(buffer('\n', RETURN));
 		return NULL;
+	}
 
 	while(curr_state != 0) {
 		if(is_final(curr_state)) {
@@ -81,7 +85,8 @@ L_Token advance() {
 	if(last_state == 0) {
 		free(lexeme);
 		fsetpos(source, &last_pos);
-		fprintf(stderr, "[-] Syntax error. Ignoring expression...\n");
+		// fprintf(stderr, "[-] Syntax error. Ignoring expression...\n");
+		free(buffer('\n', RETURN));
 		return NULL;
 	}
 
@@ -151,17 +156,18 @@ String buffer(char c, enum Action action) {
 L_Token tokenise(int state, String lexeme) {
 	L_Token token = NULL;
 	union value v;
-	v.intval = 0; //
+	// v.intval = 0; //
+	v.lexeme = lexeme;
 
 	switch(state) {
 		case 2: // int
 			// v.intval = atol(lexeme);
-			v.lexeme = lexeme;
+			// v.lexeme = lexeme;
 			token = Token(T_INT, v, 0);
 			return token;
 		case 4: // float
 			// v.fltval = atolf(lexeme); // From helperlib
-			v.lexeme = lexeme;
+			// v.lexeme = lexeme;
 			token = Token(T_FLT, v, 0);
 			return token;
 		case 5: // '*'
@@ -187,6 +193,6 @@ L_Token tokenise(int state, String lexeme) {
 			break;
 	}
 
-	free(lexeme);
+	// free(lexeme);
 	return token;
 }

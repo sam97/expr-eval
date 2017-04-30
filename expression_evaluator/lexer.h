@@ -2,7 +2,7 @@
 #define LEXER_LIB_GUARD
 
 #include <stdio.h>
-#include <stdlib.h>
+#include "helperlib.h"
 
 // Token data structure.
 typedef struct L_Token_ {
