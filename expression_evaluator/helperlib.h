@@ -7,5 +7,6 @@
 typedef char * String;
 
 long double atolf(char *s);
+long double pow(long double base, long int exponent);
 
 #endif

@@ -67,9 +67,9 @@ L_Token advance() {
 
 		temp = fgetc(source);
 		if(feof(source)) {
-			if (last_state == 11)
-				break;
-			buffer('\n', STORE);
+			// if (last_state == 11)
+			// 	break;
+			// buffer('\n', STORE);
 			curr_state = transition(EOF, curr_state);
 		}
 		else {
@@ -80,6 +80,7 @@ L_Token advance() {
 
 	if(last_state == 0) {
 		free(lexeme);
+		fsetpos(source, &last_pos);
 		fprintf(stderr, "[-] Syntax error. Ignoring expression...\n");
 		return NULL;
 	}
@@ -96,11 +97,11 @@ int is_final(int state) {
 
 // Make transition from state based on input, return new state.
 int transition(char input, int state) {
-	if(input < 0)
-		return edges[state][7];
 	if(input >= '0' && input <= '9')
 		return edges[state][0];
 	switch(input) {
+		case EOF:
+			return edges[state][7];
 		case '.':
 			return edges[state][1];
 		case '*':
@@ -154,13 +155,15 @@ L_Token tokenise(int state, String lexeme) {
 
 	switch(state) {
 		case 2: // int
-			v.intval = atol(lexeme);
+			// v.intval = atol(lexeme);
+			v.lexeme = lexeme;
 			token = Token(T_INT, v, 0);
-			break;
+			return token;
 		case 4: // float
-			v.fltval = atolf(lexeme); // From helperlib
+			// v.fltval = atolf(lexeme); // From helperlib
+			v.lexeme = lexeme;
 			token = Token(T_FLT, v, 0);
-			break;
+			return token;
 		case 5: // '*'
 			token = Token(T_MUL, v, 40);
 			break;
@@ -177,10 +180,10 @@ L_Token tokenise(int state, String lexeme) {
 			token = Token(T_SUB, v, 10);
 			break;
 		case 10: // '\n'
-			token = Token(T_NEWL, v, 100);
+			token = Token(T_NEWL, v, 0);
 			break;
 		case 11: // EOF
-			token = Token(T_END, v, 100);
+			token = Token(T_END, v, 0);
 			break;
 	}
 

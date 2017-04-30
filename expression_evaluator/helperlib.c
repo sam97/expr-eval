@@ -39,3 +39,16 @@ long double atolf(char *s) {
 
 	return lf;
 }
+
+long double pow(long double base, long int exponent) {
+	if(exponent == 0)
+		return 1;
+	if(exponent < 0)
+		return (long double)1 / pow(base, -exponent);
+	if(exponent % 2 == 0) {
+		long double half = pow(base, exponent / 2);
+		return half * half;
+	}
+
+	return base * pow(base, exponent - 1);
+}
