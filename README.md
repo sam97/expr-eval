@@ -18,7 +18,7 @@ As of now, the code is divided into four modules: *parser*, *lexer*, *temfile*, 
  - No associativity among operators as of yet. This means that all addition is done before any subtraction, and so on.
  - All operators are left-associative, except power which is right-associative.
  - Line comments are "supported", in that if any invalid token is found, the rest of the expression is ignored. `#` is suggested as a comment identifier.
- - Ignored expressions are left untouched.
+ - Invalid expressions are left untouched.
  - New lines (`\n`) are preserved.
  - The power operator DOES NOT support fractional exponents as of yet. Any such expression is considered invalid and ignored.
  - Spaces are NOT supported as of yet, although this seems trivial to implement.
