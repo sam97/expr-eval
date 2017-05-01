@@ -27,6 +27,9 @@
     <ClCompile Include="parser.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="tempfile.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="helperlib.h">
@@ -38,12 +41,12 @@
     <ClInclude Include="parser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="tempfile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="test.txt">
-      <Filter>Resource Files</Filter>
-    </Text>
-    <Text Include="test1.txt">
+    <Text Include="sample.txt">
       <Filter>Resource Files</Filter>
     </Text>
   </ItemGroup>

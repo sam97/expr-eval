@@ -68,15 +68,16 @@
     <ClCompile Include="lexer.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="parser.c" />
+    <ClCompile Include="tempfile.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="helperlib.h" />
     <ClInclude Include="lexer.h" />
     <ClInclude Include="parser.h" />
+    <ClInclude Include="tempfile.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="test.txt" />
-    <Text Include="test1.txt" />
+    <Text Include="sample.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

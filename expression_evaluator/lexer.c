@@ -3,11 +3,11 @@
 #include "helperlib.h"
 #include "lexer.h"
 
-// Private functions declarations.
-int is_final(int state);
-int transition(char input, int state);
-String buffer(char c, enum Action action);
-L_Token tokenise(int state, String lexeme);
+// Internal functions declarations.
+static int is_final(int state);
+static int transition(char input, int state);
+static String buffer(char c, enum Action action);
+static L_Token tokenise(int state, String lexeme);
 
 // Enums for the buffer function.
 enum Action {STORE, UPDATE, RETURN};
@@ -38,7 +38,7 @@ const int edges[][8] = {
 	/* State 11 */  {   0,     0,    0,    0,    0,    0,    0,   0  }
 };
 
-// Global variables.
+// Internal global variables.
 static FILE *source;
 
 // Called by other programs to initialise the lexer.
@@ -51,6 +51,7 @@ int lex_init(FILE *inputfile) {
 }
 
 // Read a token and move the read-head forward.
+// If an error occurs, the read head is set back.
 L_Token advance() {
 	int last_state = 0, curr_state = 1;
 	fpos_t last_pos;
@@ -95,15 +96,16 @@ L_Token advance() {
 	return tokenise(last_state, lexeme);
 }
 
-// Check if the state is final.
-int is_final(int state) {
+// Check if the state is final (accept state).
+static int is_final(int state) {
 	return (state == 2 || (state >= 4 && state <= 11));
 }
 
-// Make transition from state based on input, return new state.
-int transition(char input, int state) {
+// Make transition from state based on input. Return new state.
+static int transition(char input, int state) {
 	if(input >= '0' && input <= '9')
 		return edges[state][0];
+
 	switch(input) {
 		case EOF:
 			return edges[state][7];
@@ -120,12 +122,13 @@ int transition(char input, int state) {
 		case '\n':
 			return edges[state][6];
 	}
+
 	return 0;
 }
 
 // Store each character in buffer, update the null position,
 // and null-terminate at that position before returning.
-String buffer(char c, enum Action action) {
+static String buffer(char c, enum Action action) {
 	static char *buf;
 	static int len;
 	static int pos;
@@ -153,21 +156,18 @@ String buffer(char c, enum Action action) {
 	return lexeme;
 }
 
-L_Token tokenise(int state, String lexeme) {
+// Return a new token based on the state.
+// Put the lexeme in the token for further evaluation.
+static L_Token tokenise(int state, String lexeme) {
 	L_Token token = NULL;
 	union value v;
-	// v.intval = 0; //
 	v.lexeme = lexeme;
 
 	switch(state) {
 		case 2: // int
-			// v.intval = atol(lexeme);
-			// v.lexeme = lexeme;
 			token = Token(T_INT, v, 0);
 			return token;
 		case 4: // float
-			// v.fltval = atolf(lexeme); // From helperlib
-			// v.lexeme = lexeme;
 			token = Token(T_FLT, v, 0);
 			return token;
 		case 5: // '*'
@@ -193,6 +193,5 @@ L_Token tokenise(int state, String lexeme) {
 			break;
 	}
 
-	// free(lexeme);
 	return token;
 }

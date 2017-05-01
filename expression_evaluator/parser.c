@@ -1,37 +1,44 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "helperlib.h"
 #include "lexer.h"
+#include "helperlib.h"
+#include "tempfile.h"
 #include "parser.h"
 
-L_Token adwance();
-void error_routine();
-L_Token parser(int rightBP);
-L_Token nud(L_Token tok);
-L_Token led(L_Token left, L_Token tok);
-L_Token nud_sub();
-L_Token nud_add();
-L_Token led_sub(L_Token left);
-L_Token led_add(L_Token left);
-L_Token led_mul(L_Token left);
-L_Token led_div(L_Token left);
-L_Token led_pow(L_Token left);
+// Internal function declarations.
+static L_Token adwance();
+static void error_routine();
+static L_Token parser(int rightBP);
+static L_Token nud(L_Token tok);
+static L_Token led(L_Token left, L_Token tok);
+static L_Token nud_sub();
+static L_Token nud_add();
+static L_Token led_sub(L_Token left);
+static L_Token led_add(L_Token left);
+static L_Token led_mul(L_Token left);
+static L_Token led_div(L_Token left);
+static L_Token led_pow(L_Token left);
 
+// Internal global variables.
 static L_Token token;
 static FILE *source;
 
+/*
+ * This is the only externally linkable function in this module.
+ * Is called with the file name to parse.
+ * Returns non-zero on error, zero otherwise.
+ * The file is modified accordingly.
+ */
 int parse(String filename) {
 	L_Token res;
 	char s[40];
 
 	if(fopen_s(&source, filename, "r"))
 		return -1;
-	// Initialize lexer.
 	lex_init(source);
-	// Initialise temp file.
-	mktmp();
+	mktmp(); // Initialise temp file.
 
-	while(!feof(source)) {
+	while(1) {
 		// Parse each line.
 		token = adwance();
 		if(token == NULL) {
@@ -39,10 +46,11 @@ int parse(String filename) {
 			continue;
 		}
 		if(token->t == T_NEWL) {
+			// New line found.
 			tmpputs("\n");
 			continue;
 		}
-		if(token->t == T_END)
+		if(token->t == T_END) // EOF found.
 			break;
 
 		res = parser(0);
@@ -51,28 +59,38 @@ int parse(String filename) {
 			continue;
 		}
 
+		// Store result in s. This is because at EOF, '\n' is not needed.
 		if(res->t == T_INT)
 			sprintf_s(s, 40 * sizeof(char), "=%ld", res->v.intval);
 		else
 			sprintf_s(s, 40 * sizeof(char), "=%lf", res->v.fltval);
 
 		tmpputs(s);
-		if(token->t == T_NEWL)
+		if(token->t == T_NEWL) // Put new line only if present in file.
 			tmpputs("\n");
-	}
 
-	// Copy file.
+		free(res);
+	}
+	free(token);
+
+	// Copy temp file to original.
 	fclose(source);
 
+	fprintf(stdout, "[!] Started copying. DO NOT terminate!\n");
 	fopen_s(&source, filename, "w");
 	tmpcopy(source);
 	fclose(source);
+	fprintf(stdout, "[!] Finished copying. Exiting...\n");
 
 	tmpclose();
+
+	return 0;
 }
 
 // Wrapper to the advance function.
-L_Token adwance() {
+// Writes each token except '\n' and EOF to temp file.
+// Converts tokens accordingly and frees the 'lexeme'.
+static L_Token adwance() {
 	L_Token t;
 	t = advance();
 	if(!t)
@@ -101,17 +119,18 @@ L_Token adwance() {
 }
 
 // Writes rest of the line to tmpfile.
-void error_routine() {
+static void error_routine() {
 	String buf = NULL;
 	int len = 0;
 	char c;
 
+	// TODO: Stop using ungetc. Store the last char in c directly.
 	while((c = fgetc(source)) != '\n' && c >= 0) {
 		buf = (String) realloc(buf, len+1);
 		buf[len] = c;
 		++len;
 	}
-	if (c >= 0) {
+	if (c >= 0) { // If not EOF, put '\n'.
 		buf = (String)realloc(buf, len + 1);
 		buf[len] = '\n';
 		++len;
@@ -124,7 +143,13 @@ void error_routine() {
 	free(buf);
 }
 
-L_Token parser(int rightBP) {
+/*
+ * Implements Top Down Operator Precedence.
+ * As per the algo, only supposed to be called
+   at the start of expression or sub-expression.
+ * Returns NULL on error. All error-handling must be done by 'parse'.
+ */
+static L_Token parser(int rightBP) {
 	L_Token temp, left;
 	if(!token || token->t == T_END)
 		return NULL;
@@ -162,7 +187,10 @@ L_Token parser(int rightBP) {
 	return left;
 }
 
-L_Token nud(L_Token tok) {
+// Null denotation.
+// Only called for operators with no left argument.
+// If done otherwise, return NULL.
+static L_Token nud(L_Token tok) {
 	if(tok->t == T_SUB)
 		return nud_sub();
 	if(tok->t == T_ADD)
@@ -173,7 +201,10 @@ L_Token nud(L_Token tok) {
 	return NULL;
 }
 
-L_Token led(L_Token left, L_Token tok) {
+// Left Denotation.
+// Only called for operators with at least a left argument.
+// If done otherwise, return NULL.
+static L_Token led(L_Token left, L_Token tok) {
 	switch(tok->t) {
 		case T_SUB:
 			return led_sub(left);
@@ -191,7 +222,8 @@ L_Token led(L_Token left, L_Token tok) {
 }
 
 // Unary minus.
-L_Token nud_sub() {
+// Binding power: 100
+static L_Token nud_sub() {
 	L_Token right;
 
 	right = parser(100);
@@ -207,22 +239,20 @@ L_Token nud_sub() {
 }
 
 // Unary plus.
-L_Token nud_add() {
+// Binding power: 100
+static L_Token nud_add() {
 	L_Token right;
 
 	right = parser(100);
-	if (right == NULL)
-		return NULL;
-	// if(right->t == T_INT)
-	// 	right->v.intval = -(right->v.intval);
-	// if(right->t == T_FLT)
-	// 	right->v.fltval = -(right->v.fltval);
+	// if (right == NULL)
+	// 	return NULL;
 
 	return right;
 }
 
-// Binary minus
-L_Token led_sub(L_Token left) {
+// Binary subtraction
+// Binding power: 10
+static L_Token led_sub(L_Token left) {
 	L_Token right;
 
 	right = parser(10);
@@ -247,13 +277,15 @@ L_Token led_sub(L_Token left) {
 		}
 	}
 
-	// free left???
+	// free left
+	free(left);
 
 	return right;
 }
 
-// Binary plus
-L_Token led_add(L_Token left) {
+// Binary addition
+// Binding power: 20
+static L_Token led_add(L_Token left) {
 	L_Token right;
 
 	right = parser(20);
@@ -278,11 +310,15 @@ L_Token led_add(L_Token left) {
 		}
 	}
 
+	// free left
+	free(left);
+
 	return right;
 }
 
 // Binary multiply
-L_Token led_mul(L_Token left) {
+// Binding power: 40
+static L_Token led_mul(L_Token left) {
 	L_Token right;
 
 	right = parser(40);
@@ -307,11 +343,16 @@ L_Token led_mul(L_Token left) {
 		}
 	}
 
+	// free left
+	free(left);
+
 	return right;
 }
 
 // Binary divide
-L_Token led_div(L_Token left) {
+// Division of integers can return a float.
+// Binding power: 30
+static L_Token led_div(L_Token left) {
 	L_Token right;
 
 	right = parser(30);
@@ -319,9 +360,12 @@ L_Token led_div(L_Token left) {
 		return NULL;
 
 	if(right->t == T_FLT) { // right is float
-		if(right->v.fltval == 0)
+		if(right->v.fltval == 0) {
 			// TODO: Destroy right.
+			if(token->t == T_NEWL)
+				ungetc('\n', source);
 			return NULL;
+		}
 
 		if(left->t == T_FLT) { // left is float
 			right->v.fltval = left->v.fltval / right->v.fltval;
@@ -331,8 +375,11 @@ L_Token led_div(L_Token left) {
 		}
 	}
 	else { // right is int
-		if(right->v.intval == 0)
+		if(right->v.intval == 0){
+			if(token->t == T_NEWL)
+				ungetc('\n', source);
 			return NULL;
+		}
 
 		if(left->t == T_FLT) { // left is float
 			right->v.fltval = left->v.fltval / right->v.intval;
@@ -354,14 +401,19 @@ L_Token led_div(L_Token left) {
 		}
 	}
 
+	// free left
+	free(left);
+
 	return right;
 }
 
 // Binary power
-L_Token led_pow(L_Token left) {
+// Exponent as float not supported.
+// Binding power: 50
+static L_Token led_pow(L_Token left) {
 	L_Token right;
 
-	right = parser(50 - 1);
+	right = parser(50 - 1); // Lower BP to support right-associativity.
 	if (right == NULL)
 		return NULL;
 
@@ -382,10 +434,13 @@ L_Token led_pow(L_Token left) {
 			right->t = T_FLT;
 		}
 	}
-	else { // right is float. Floats as exopnent not supported.
+	else { // right is float. Exopnent as floats not supported.
 		long int ti = (long int)right->v.fltval;
-		if(ti != right->v.fltval) // If exponent has fractional part, then skip.
+		if(ti != right->v.fltval) {// If exponent has fractional part, then skip.
+			if(token->t == T_NEWL)
+				ungetc('\n', source);
 			return NULL;
+		}
 
 		if(left->t == T_INT) {// left is int.
 			long double t = pow(left->v.intval, ti);
@@ -402,6 +457,9 @@ L_Token led_pow(L_Token left) {
 			right->v.fltval = pow(left->v.fltval, ti);
 		}
 	}
+
+	// free left
+	free(left);
 
 	return right;
 }
