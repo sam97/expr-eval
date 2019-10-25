@@ -61,9 +61,9 @@ int parse(String filename) {
 
 		// Store result in s. This is because at EOF, '\n' is not needed.
 		if(res->t == T_INT)
-			sprintf_s(s, 40 * sizeof(char), "=%ld", res->v.intval);
+			sprintf_s(s, 40 * sizeof(char), " = %ld", res->v.intval);
 		else
-			sprintf_s(s, 40 * sizeof(char), "=%lf", res->v.fltval);
+			sprintf_s(s, 40 * sizeof(char), " = %lf", res->v.fltval);
 
 		tmpputs(s);
 		if(token->t == T_NEWL) // Put new line only if present in file.
