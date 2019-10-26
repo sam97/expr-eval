@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "expression_evaluator", "exp
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Tests", "Tests\Tests.vcxproj", "{4D2E2579-F26E-418B-A18F-63188DE4D4FB}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lexer", "Lexer\Lexer.vcxproj", "{327FE61D-D55C-42A9-8945-E559C6B14AA4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -29,6 +31,14 @@ Global
 		{4D2E2579-F26E-418B-A18F-63188DE4D4FB}.Release|Win32.Build.0 = Release|Win32
 		{4D2E2579-F26E-418B-A18F-63188DE4D4FB}.Release|x64.ActiveCfg = Release|x64
 		{4D2E2579-F26E-418B-A18F-63188DE4D4FB}.Release|x64.Build.0 = Release|x64
+		{327FE61D-D55C-42A9-8945-E559C6B14AA4}.Debug|Win32.ActiveCfg = Debug|Win32
+		{327FE61D-D55C-42A9-8945-E559C6B14AA4}.Debug|Win32.Build.0 = Debug|Win32
+		{327FE61D-D55C-42A9-8945-E559C6B14AA4}.Debug|x64.ActiveCfg = Debug|x64
+		{327FE61D-D55C-42A9-8945-E559C6B14AA4}.Debug|x64.Build.0 = Debug|x64
+		{327FE61D-D55C-42A9-8945-E559C6B14AA4}.Release|Win32.ActiveCfg = Release|Win32
+		{327FE61D-D55C-42A9-8945-E559C6B14AA4}.Release|Win32.Build.0 = Release|Win32
+		{327FE61D-D55C-42A9-8945-E559C6B14AA4}.Release|x64.ActiveCfg = Release|x64
+		{327FE61D-D55C-42A9-8945-E559C6B14AA4}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
