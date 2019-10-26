@@ -404,3 +404,10 @@ healthchecksdb
 MigrationBackup/
 
 # End of https://www.gitignore.io/api/c,visualstudio
+
+# pkg-config files for libraries
+**/pkgconfig/*.pc
+
+# Don't include these header files. Header files to exclude are to be blacklisted here.
+/Tests/include/cmocka.h
+/Tests/include/cmocka_pbc.h
