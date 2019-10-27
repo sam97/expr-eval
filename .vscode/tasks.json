@@ -1,0 +1,88 @@
+{
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "cmake lexer",
+            "command": "/usr/bin/cmake",
+            "args": [
+                "-DCMAKE_BUILD_TYPE=Debug",
+                ".."
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/src/lexer/build/"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "make lexer",
+            "command": "/usr/bin/make",
+            "options": {
+                "cwd": "${workspaceFolder}/src/lexer/build/"
+            },
+            "dependsOn": "cmake lexer",
+            "dependsOrder": "sequence",
+            "group": "build"
+        },
+        {
+            "type": "shell",
+            "label": "cmake tests",
+            "command": "/usr/bin/cmake",
+            "args": [
+                "-DCMAKE_BUILD_TYPE=Debug",
+                ".."
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/tests/build/"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "make tests",
+            "command": "/usr/bin/make",
+            "options": {
+                "cwd": "${workspaceFolder}/tests/build/"
+            },
+            "dependsOn": [
+                "make lexer",
+                "cmake tests"
+            ],
+            "dependsOrder": "sequence",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "type": "process",
+            "label": "run tests",
+            "command": "${workspaceFolder}/tests/build/tests",
+            "dependsOn": "make tests",
+            "dependsOrder": "sequence",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "problemMatcher": {
+                "owner": "cmocka",
+                "fileLocation": "autoDetect",
+                "source": "cmocka",
+                "pattern": [
+                    {
+                        "regexp": "^\\[\\s+ERROR\\s+] --- (.*)",
+                        "message": 1
+                    },
+                    {
+                        "regexp": "\\[\\s+LINE\\s+] --- ([^:]+):([0-9]+):(.+)",
+                        "file": 1,
+                        "line": 2,
+                    },
+                    {
+                        "regexp": "\\[\\s+FAILED\\s+] (.*)",
+                        "code": 1
+                    }
+                ]
+            }
+        }
+    ],
+    "version": "2.0.0"
+}
