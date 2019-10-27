@@ -405,9 +405,43 @@ MigrationBackup/
 
 # End of https://www.gitignore.io/api/c,visualstudio
 
+# Created by https://www.gitignore.io/api/code,cmake
+# Edit at https://www.gitignore.io/?templates=code,cmake
+
+### CMake ###
+CMakeLists.txt.user
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps
+
+### CMake Patch ###
+# External projects
+*-prefix/
+
+### Code ###
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# End of https://www.gitignore.io/api/code,cmake
+
 # pkg-config files for libraries
 **/pkgconfig/*.pc
 
 # Don't include these header files. Header files to exclude are to be blacklisted here.
 /Tests/include/cmocka.h
 /Tests/include/cmocka_pbc.h
+
+# Ignore CMake build folders
+/build/
+/src/*/build/
+/tests/build/

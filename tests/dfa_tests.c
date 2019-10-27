@@ -3,7 +3,7 @@
 #include <setjmp.h>
 #include <stdint.h>
 #include <cmocka.h>
-#include "dfa/dfa.h"
+#include "lexer/dfa.h"
 #include "dfa_tests.h"
 
 int test_dfa_init() {

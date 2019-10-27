@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
-#include "dfa/dfa.h"
+#include "dfa.h"
 
 #define SETSTATE(state, token, next_state, next_edge) \
 	dfa->states[state] = mkdfa(token, next_state, next_edge)
