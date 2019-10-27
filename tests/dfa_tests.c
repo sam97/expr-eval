@@ -13,6 +13,7 @@ void test_dfa_init(void **state) {
 	assert_non_null(dfa->final_states);
 	assert_non_null(dfa->states);
 	assert_int_equal(dfa->states_count, 12);
+	assert_int_equal(dfa->final_states_count, 9);
 
 	assert_int_equal(dfa->final_states[0], 2);
 	assert_int_equal(dfa->final_states[8], 11);
@@ -39,4 +40,19 @@ void test_get_next_state(void **state) {
 	assert_int_equal(get_next_state(dfa, 4, '0'), 4);
 	assert_int_equal(get_next_state(dfa, 5, '0'), 0);
 	assert_int_equal(get_next_state(dfa, 11, ' '), 11);
+}
+
+void test_is_final_state(void **state) {
+	DFA dfa = init_dfa();
+
+	assert_int_equal(is_final_state(dfa, 12), -1);
+	assert_int_equal(is_final_state(dfa, 20), -1);
+	assert_int_equal(is_final_state(NULL, 2), -1);
+
+	assert_int_equal(is_final_state(dfa, 2), 1);
+	assert_int_equal(is_final_state(dfa, 4), 1);
+	assert_int_equal(is_final_state(dfa, 11), 1);
+	assert_int_equal(is_final_state(dfa, 0), 0);
+	assert_int_equal(is_final_state(dfa, 1), 0);
+	assert_int_equal(is_final_state(dfa, 3), 0);
 }

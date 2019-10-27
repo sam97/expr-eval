@@ -69,8 +69,8 @@ DFA init_dfa() {
 		return NULL;
 	}
 
-	dfa->final_states_count = sizeof(final_states);
-	memcpy(dfa->final_states, final_states, dfa->final_states_count);
+	dfa->final_states_count = (sizeof(final_states)/sizeof(final_states[0]));
+	memcpy(dfa->final_states, final_states, sizeof(final_states[0]) * dfa->final_states_count);
 
 	return dfa;
 }
@@ -88,6 +88,19 @@ int get_next_state(DFA dfa, int current_state, char input) {
 		if (edge->token == input)
 			return edge->value;
 		edge = edge->next_item;
+	}
+
+	return 0;
+}
+
+int is_final_state(DFA dfa, int state) {
+	if (!dfa || state >= dfa->states_count)
+		return -1;
+	
+	for (size_t i = 0; i < dfa->final_states_count; i++)
+	{
+		if (dfa->final_states[i] == state)
+			return 1;
 	}
 
 	return 0;
