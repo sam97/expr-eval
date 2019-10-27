@@ -75,4 +75,20 @@ DFA init_dfa() {
 	return dfa;
 }
 
+int get_next_state(DFA dfa, int current_state, char input) {
+	if (!dfa)
+		return -1;
+	if (current_state >= dfa->states_count)
+		return -1;
+	
+	input = input >= '0' && input <= '9' ? '0' : input;
 
+	DfaEdge edge = dfa->states[current_state];
+	while (edge) {
+		if (edge->token == input)
+			return edge->value;
+		edge = edge->next_item;
+	}
+
+	return 0;
+}

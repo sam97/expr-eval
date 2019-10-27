@@ -14,7 +14,8 @@ int main()
 	printf("[+] Beginning tests...\n");
 
 	const struct CMUnitTest tests[] = {
-		cmocka_unit_test(test_dfa_init)
+		cmocka_unit_test(test_dfa_init),
+		cmocka_unit_test(test_get_next_state)
 	};
 
 	cmocka_set_test_filter("test_*");

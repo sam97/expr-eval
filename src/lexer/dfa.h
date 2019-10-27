@@ -23,9 +23,15 @@ struct DFAItem {
 };
 typedef struct DFAItem *DFA;
 
+// Initialize the DFA for the expression evaluator grammar
+// and return a handle to it.
 DFA init_dfa();
-int getNextState(DFA dfa);
-int isFinalState(DFA dfa, int state);
+
+// Returns the next state, or -1 if errored out.
+int get_next_state(DFA dfa, int current_state, char input);
+
+int is_final_state(DFA dfa, int state);
+
 //TokenType getTokenType(DFA* dfa, int state);
 
 // Edges for the DFA.

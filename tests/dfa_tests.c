@@ -24,3 +24,19 @@ void test_dfa_init(void **state) {
 	assert_int_not_equal(dfa->states[3]->value, 3);
 	assert_null(dfa->states[3]->next_item);
 }
+
+void test_get_next_state(void **state) {
+	DFA dfa = init_dfa();
+
+	assert_int_equal(get_next_state(dfa, 12, '0'), -1);
+	assert_int_equal(get_next_state(NULL, 0, '0'), -1);
+	assert_int_equal(get_next_state(dfa, 0, 'x'), 0);
+
+	assert_int_equal(get_next_state(dfa, 0, '0'), 0);
+	assert_int_equal(get_next_state(dfa, 1, '/'), 7);
+	assert_int_equal(get_next_state(dfa, 2, '.'), 3);
+	assert_int_equal(get_next_state(dfa, 3, '0'), 4);
+	assert_int_equal(get_next_state(dfa, 4, '0'), 4);
+	assert_int_equal(get_next_state(dfa, 5, '0'), 0);
+	assert_int_equal(get_next_state(dfa, 11, ' '), 11);
+}
