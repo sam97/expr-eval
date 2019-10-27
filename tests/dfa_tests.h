@@ -1,3 +1,3 @@
 #pragma once
 
-int test_dfa_init();
+void test_dfa_init(void **state);

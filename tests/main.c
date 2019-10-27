@@ -11,7 +11,7 @@
 // import it here and run the tests. CMocka will handle the rest.
 int main()
 {
-	printf("[+] Beginning tests...");
+	printf("[+] Beginning tests...\n");
 
 	const struct CMUnitTest tests[] = {
 		cmocka_unit_test(test_dfa_init)
@@ -20,6 +20,6 @@ int main()
 	cmocka_set_test_filter("test_*");
 	cmocka_run_group_tests(tests, NULL, NULL);
 
-	printf("[+] Tests complete.");
+	printf("[+] Tests complete.\n");
 	return 0;
 }
