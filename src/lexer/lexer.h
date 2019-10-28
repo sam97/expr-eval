@@ -20,8 +20,8 @@ typedef enum {
 typedef struct _LexerContext {
     // Source code of the input
     char *source_code;
-    // Current position in the source code
-    size_t position;
+    // Current position of the read-head in the source code
+    size_t read_head;
     // Whether the end has been reached
     short int is_closed;
 } *Lex;

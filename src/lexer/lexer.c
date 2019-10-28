@@ -11,7 +11,7 @@ Lex lex_init(char *input) {
         return NULL;
     
     lexer->is_closed = 0;
-    lexer->position = 0;
+    lexer->read_head = 0;
 
     size_t length = strlen(input);
     lexer->source_code = (char *)malloc(sizeof(char) * (length + 1));

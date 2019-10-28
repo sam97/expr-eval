@@ -10,7 +10,7 @@ static void test_lexer_good(char *source_code) {
     Lex lexer = lex_init(source_code);
 
     assert_non_null(lexer);
-    assert_int_equal(lexer->position, 0);
+    assert_int_equal(lexer->read_head, 0);
     assert_int_equal(lexer->is_closed, 0);
     assert_string_equal(lexer->source_code, source_code);
 
