@@ -31,55 +31,33 @@ DFA init_dfa() {
 	}
 
 	// See dfa.h for states, inputs and their definitions.
-	dfa->states[0] = NULL;
-	SETSTATE(1, I_NUMBER, 2, 
-		SETSTATE(1, I_DOT, 3, 
-			SETSTATE(1, I_ASTERISK, 5, 
-				SETSTATE(1, I_SLASH, 7, 
-					SETSTATE(1, I_PLUS, 8, 
-						SETSTATE(1, I_MINUS, 9, 
-							SETSTATE(1, I_NEW_LINE, 10, 
-								SETSTATE(1, I_END_OF_STRING, 11, 
-									SETSTATE(1, I_SPACE, 1, NULL)))))))));
-	SETSTATE(2, I_NUMBER, 2,
-		SETSTATE(2, I_DOT, 3, NULL));
-	SETSTATE(3, I_NUMBER, 4, NULL);
-	SETSTATE(4, I_NUMBER, 4, NULL);
-	SETSTATE(5, I_SPACE, 5, NULL);
-	SETSTATE(6, I_SPACE, 6, NULL);
-	SETSTATE(7, I_SPACE, 7, NULL);
-	SETSTATE(8, I_SPACE, 8, NULL);
-	SETSTATE(9, I_SPACE, 9, NULL);
-	SETSTATE(10, I_SPACE, 10, NULL);
-	SETSTATE(11, I_SPACE, 11, NULL);
+	dfa->states[S_ERROR] = NULL;
+	SETSTATE(S_START, I_NUMBER, S_INTEGER, 
+		SETSTATE(S_START, I_DOT, S_DOT, 
+			SETSTATE(S_START, I_ASTERISK, S_MULTIPLICATION, 
+				SETSTATE(S_START, I_SLASH, S_DIVISION, 
+					SETSTATE(S_START, I_PLUS, S_PLUS, 
+						SETSTATE(S_START, I_MINUS, S_MINUS, 
+							SETSTATE(S_START, I_NEW_LINE, S_NEW_LINE, 
+								SETSTATE(S_START, I_END_OF_STRING, S_EOD, 
+									SETSTATE(S_START, I_SPACE, S_START, NULL)))))))));
+	SETSTATE(S_INTEGER, I_NUMBER, S_INTEGER,
+		SETSTATE(S_INTEGER, I_DOT, S_DOT, NULL));
+	SETSTATE(S_DOT, I_NUMBER, S_FLOAT, NULL);
+	SETSTATE(S_FLOAT, I_NUMBER, S_FLOAT, NULL);
+	SETSTATE(S_MULTIPLICATION, I_SPACE, S_MULTIPLICATION, NULL);
+	SETSTATE(S_POWER, I_SPACE, S_POWER, NULL);
+	SETSTATE(S_DIVISION, I_SPACE, S_DIVISION, NULL);
+	SETSTATE(S_PLUS, I_SPACE, S_PLUS, NULL);
+	SETSTATE(S_MINUS, I_SPACE, S_MINUS, NULL);
+	SETSTATE(S_NEW_LINE, I_SPACE, S_NEW_LINE, NULL);
+	SETSTATE(S_EOD, I_SPACE, S_EOD, NULL);
 	
-	// Populate the final states
-	int final_states[] = DFA_FINAL_STATES;
-	dfa->final_states = (int*)malloc(sizeof(final_states));
-	if (dfa->final_states == NULL) {
-		for (size_t i = 0; i < dfa->states_count; i++)
-		{
-			DfaEdge edge = dfa->states[i];
-			while (edge != NULL) {
-				DfaEdge next = edge->next_item;
-				free(edge);
-				edge = next;
-			}
-		}
-		free(dfa);
-		return NULL;
-	}
-
-	dfa->final_states_count = (sizeof(final_states)/sizeof(final_states[0]));
-	memcpy(dfa->final_states, final_states, sizeof(final_states[0]) * dfa->final_states_count);
-
 	return dfa;
 }
 
-int get_next_state(DFA dfa, int current_state, char input) {
+int get_next_state(DFA dfa, DfaState current_state, char input) {
 	if (!dfa)
-		return -1;
-	if (current_state >= dfa->states_count)
 		return -1;
 	
 	input = input >= '0' && input <= '9' ? I_NUMBER : input;
@@ -94,15 +72,23 @@ int get_next_state(DFA dfa, int current_state, char input) {
 	return 0;
 }
 
-int is_final_state(DFA dfa, int state) {
-	if (!dfa || state >= dfa->states_count)
+int is_final_state(DFA dfa, DfaState state) {
+	if (!dfa)
 		return -1;
 	
-	for (size_t i = 0; i < dfa->final_states_count; i++)
+	switch (state)
 	{
-		if (dfa->final_states[i] == state)
-			return 1;
+	case S_INTEGER:
+	case S_FLOAT:
+	case S_MULTIPLICATION:
+	case S_POWER:
+	case S_DIVISION:
+	case S_PLUS:
+	case S_MINUS:
+	case S_NEW_LINE:
+	case S_EOD:
+		return 1;
+	default:
+		return 0;
 	}
-
-	return 0;
 }

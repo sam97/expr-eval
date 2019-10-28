@@ -12,8 +12,23 @@
 #define I_END_OF_STRING '\0'
 #define I_SPACE ' '
 
+// States of the DFA. 1 is start state and 0 and 3 are non-final states.
+typedef enum _DfaState {
+	S_ERROR = 0,
+	S_START = 1,
+	S_INTEGER = 2,
+	S_DOT = 3,
+	S_FLOAT = 4,
+	S_MULTIPLICATION = 5,
+	S_POWER = 6,
+	S_DIVISION = 7,
+	S_PLUS = 8,
+	S_MINUS = 9,
+	S_NEW_LINE = 10, // TODO: Why this in an interpreter?
+	S_EOD = 11
+} DfaState;
+
 #define DFA_STATES_COUNT 12
-#define DFA_FINAL_STATES { 2, 4, 5, 6, 7, 8, 9, 10, 11 }
 
 struct DfaEdgeListItem {
 	// The token that this entry represents
@@ -27,8 +42,6 @@ typedef struct DfaEdgeListItem *DfaEdge;
 struct DFAItem {
 	DfaEdge* states;
 	int states_count;
-	int* final_states;
-	int final_states_count;
 };
 typedef struct DFAItem *DFA;
 
@@ -37,9 +50,9 @@ typedef struct DFAItem *DFA;
 DFA init_dfa();
 
 // Returns the next state, or -1 if errored out.
-int get_next_state(DFA dfa, int current_state, char input);
+int get_next_state(DFA dfa, DfaState current_state, char input);
 
-int is_final_state(DFA dfa, int state);
+int is_final_state(DFA dfa, DfaState state);
 
 //TokenType getTokenType(DFA* dfa, int state);
 

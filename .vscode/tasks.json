@@ -90,7 +90,7 @@
         {
             "type": "process",
             "label": "run tests",
-            "command": "${workspaceFolder}/tests/build/tests",
+            "command": "${workspaceFolder}/build/tests/tests",
             "dependsOn": "make all",
             "dependsOrder": "sequence",
             "group": {
