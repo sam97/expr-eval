@@ -1,7 +1,16 @@
 #ifndef DFA_GUARD_H
 #define	DFA_GUARD_H
 
-//#include "lexer.h";
+// Input definitions for DFA
+#define I_NUMBER '0'
+#define I_DOT '.'
+#define I_ASTERISK '*'
+#define I_SLASH '/'
+#define I_PLUS '+'
+#define I_MINUS '-'
+#define I_NEW_LINE '\n'
+#define I_END_OF_STRING '\0'
+#define I_SPACE ' '
 
 #define DFA_STATES_COUNT 12
 #define DFA_FINAL_STATES { 2, 4, 5, 6, 7, 8, 9, 10, 11 }
@@ -35,6 +44,17 @@ int is_final_state(DFA dfa, int state);
 //TokenType getTokenType(DFA* dfa, int state);
 
 // Edges for the DFA.
+// State 0 is the error state. Any state that matches unknown characters is
+// forwarded here.
+// State 1 is the start state. Usually this state will determine which final
+// state the FSM will end up in.
+// State 2 - Integer
+// State 3 - Dot after an integer. Intermediate state between Integer and Float
+// State 4 - Floating decimal
+// State 6 - '**'
+// Rest of the states can be determined by looking at State 1.
+// TODO: Bug in state 5. '* *' will be interpreted as State 6.
+// 
 // const int edges[][9] = {
 // 	               /* [0-9],  '.',  '*',  '/',  '+',  '-',  \n,  EOF,  ' '  */
 // 	/* State 0  */  {   0,     0,    0,    0,    0,    0,    0,   0,    0   },

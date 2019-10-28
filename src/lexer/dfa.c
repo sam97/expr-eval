@@ -30,27 +30,28 @@ DFA init_dfa() {
 		return NULL;
 	}
 
+	// See dfa.h for states, inputs and their definitions.
 	dfa->states[0] = NULL;
-	SETSTATE(1, '0', 2, 
-		SETSTATE(1, '.', 3, 
-			SETSTATE(1, '*', 5, 
-				SETSTATE(1, '/', 7, 
-					SETSTATE(1, '+', 8, 
-						SETSTATE(1, '-', 9, 
-							SETSTATE(1, '\n', 10, 
-								SETSTATE(1, '\0', 11, 
-									SETSTATE(1, ' ', 1, NULL)))))))));
-	SETSTATE(2, '0', 2,
-		SETSTATE(2, '.', 3, NULL));
-	SETSTATE(3, '0', 4, NULL);
-	SETSTATE(4, '0', 4, NULL);
-	SETSTATE(5, ' ', 5, NULL);
-	SETSTATE(6, ' ', 6, NULL);
-	SETSTATE(7, ' ', 7, NULL);
-	SETSTATE(8, ' ', 8, NULL);
-	SETSTATE(9, ' ', 9, NULL);
-	SETSTATE(10, ' ', 10, NULL);
-	SETSTATE(11, ' ', 11, NULL);
+	SETSTATE(1, I_NUMBER, 2, 
+		SETSTATE(1, I_DOT, 3, 
+			SETSTATE(1, I_ASTERISK, 5, 
+				SETSTATE(1, I_SLASH, 7, 
+					SETSTATE(1, I_PLUS, 8, 
+						SETSTATE(1, I_MINUS, 9, 
+							SETSTATE(1, I_NEW_LINE, 10, 
+								SETSTATE(1, I_END_OF_STRING, 11, 
+									SETSTATE(1, I_SPACE, 1, NULL)))))))));
+	SETSTATE(2, I_NUMBER, 2,
+		SETSTATE(2, I_DOT, 3, NULL));
+	SETSTATE(3, I_NUMBER, 4, NULL);
+	SETSTATE(4, I_NUMBER, 4, NULL);
+	SETSTATE(5, I_SPACE, 5, NULL);
+	SETSTATE(6, I_SPACE, 6, NULL);
+	SETSTATE(7, I_SPACE, 7, NULL);
+	SETSTATE(8, I_SPACE, 8, NULL);
+	SETSTATE(9, I_SPACE, 9, NULL);
+	SETSTATE(10, I_SPACE, 10, NULL);
+	SETSTATE(11, I_SPACE, 11, NULL);
 	
 	// Populate the final states
 	int final_states[] = DFA_FINAL_STATES;
@@ -81,7 +82,7 @@ int get_next_state(DFA dfa, int current_state, char input) {
 	if (current_state >= dfa->states_count)
 		return -1;
 	
-	input = input >= '0' && input <= '9' ? '0' : input;
+	input = input >= '0' && input <= '9' ? I_NUMBER : input;
 
 	DfaEdge edge = dfa->states[current_state];
 	while (edge) {
