@@ -6,6 +6,7 @@
 
 // Type of a found token; used as its ID.
 typedef enum { 
+    T_ERR, // Implies syntax error
     T_POW,
     T_MUL,
     T_DIV,
@@ -23,6 +24,7 @@ typedef struct _LexerContext {
     DFA state_machine;
     // Source code of the input
     char *source_code;
+    int source_length;
     // Current position of the read-head in the source code
     size_t read_head;
     // Whether the end has been reached
@@ -44,5 +46,7 @@ Lex lex_init(char *input);
 Token next_token(Lex lexer);
 // Free the lexer and its contents
 void lex_dispose(Lex lexer);
+// Free the token and its contents
+void token_dispose(Token token);
 
 #endif // !LEXER_GUARD_H

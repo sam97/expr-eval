@@ -19,12 +19,18 @@ int main()
 		cmocka_unit_test(test_get_next_state),
 		cmocka_unit_test(test_is_final_state),
 		
-		cmocka_unit_test(test_lexer_init)
+		cmocka_unit_test(test_lexer_init),
+		cmocka_unit_test(test_lexer_next)
 	};
 
 	cmocka_set_test_filter("test_*");
-	cmocka_run_group_tests(tests, NULL, NULL);
+	int failed_tests = -1;
+	if (failed_tests = cmocka_run_group_tests(tests, NULL, NULL)) {
+		printf("[-] %d Tests Failed.\n", failed_tests);
+	}
+	else {
+		printf("[+] Tests complete.\n");
+	}
 
-	printf("[+] Tests complete.\n");
 	return 0;
 }
