@@ -40,14 +40,15 @@ void test_lexer_next(void **state) {
     test_lexer_next_good(lexer, T_ERR, NULL);
     lex_dispose(lexer);
 
-    lexer = lex_init("/**-+20 20.5 *** ");
+    lexer = lex_init("/**-+20 20.5 * *** ");
     test_lexer_next_good(lexer, T_DIV, "/");
     test_lexer_next_good(lexer, T_POW, "**");
     test_lexer_next_good(lexer, T_SUB, "-");
     test_lexer_next_good(lexer, T_ADD, "+");
     test_lexer_next_good(lexer, T_INT, "20");
     test_lexer_next_good(lexer, T_FLT, " 20.5");
-    test_lexer_next_good(lexer, T_POW, " **");
+    test_lexer_next_good(lexer, T_MUL, " * ");
+    test_lexer_next_good(lexer, T_POW, "**");
     test_lexer_next_good(lexer, T_MUL, "* ");
     test_lexer_next_good(lexer, T_END, "\0");
     lex_dispose(lexer);

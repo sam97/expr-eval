@@ -129,6 +129,7 @@ static Token tokenise(DfaState final_state, char *lexeme) {
 	case S_FLOAT:
         type = T_FLT; break;
 	case S_MULTIPLICATION:
+    case S_MULT_SPACED:
         type = T_MUL; break;
 	case S_POWER:
         type = T_POW; break;

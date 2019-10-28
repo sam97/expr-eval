@@ -35,13 +35,17 @@ void test_get_next_state(void **state) {
 	assert_int_equal(get_next_state(dfa, S_FLOAT, I_NUMBER), S_FLOAT);
 	assert_int_equal(get_next_state(dfa, S_MULTIPLICATION, I_NUMBER), S_ERROR);
 	assert_int_equal(get_next_state(dfa, S_EOD, I_SPACE), S_EOD);
+
+	assert_int_equal(get_next_state(dfa, S_MULTIPLICATION, I_ASTERISK), S_POWER);
+	assert_int_equal(get_next_state(dfa, S_MULTIPLICATION, I_SPACE), S_MULT_SPACED);
+	assert_int_equal(get_next_state(dfa, S_MULT_SPACED, I_ASTERISK), S_ERROR);
 }
 
 void test_is_final_state(void **state) {
 	DFA dfa = init_dfa();
 
 	assert_false(is_final_state(dfa, (DfaState)DFA_STATES_COUNT));
-	assert_false(is_final_state(dfa, (DfaState)20));
+	assert_false(is_final_state(dfa, (DfaState)20000));
 	assert_int_equal(is_final_state(NULL, S_INTEGER), -1);
 
 	assert_true(is_final_state(dfa, S_INTEGER));

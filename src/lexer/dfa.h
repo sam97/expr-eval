@@ -15,20 +15,21 @@
 // States of the DFA. 1 is start state and 0 and 3 are non-final states.
 typedef enum _DfaState {
 	S_ERROR = 0,
-	S_START = 1,
-	S_INTEGER = 2,
-	S_DOT = 3,
-	S_FLOAT = 4,
-	S_MULTIPLICATION = 5,
-	S_POWER = 6,
-	S_DIVISION = 7,
-	S_PLUS = 8,
-	S_MINUS = 9,
-	S_NEW_LINE = 10, // TODO: Why this in an interpreter?
-	S_EOD = 11
+	S_START,
+	S_INTEGER,
+	S_DOT,
+	S_FLOAT,
+	S_MULTIPLICATION,
+	S_MULT_SPACED,
+	S_POWER,
+	S_DIVISION,
+	S_PLUS,
+	S_MINUS,
+	S_NEW_LINE, // TODO: Why this in an interpreter?
+	S_EOD
 } DfaState;
 
-#define DFA_STATES_COUNT 12
+#define DFA_STATES_COUNT 13
 
 struct DfaEdgeListItem {
 	// The token that this entry represents
@@ -66,7 +67,6 @@ int is_final_state(DFA dfa, DfaState state);
 // State 4 - Floating decimal
 // State 6 - '**'
 // Rest of the states can be determined by looking at State 1.
-// TODO: Bug in state 5. '* *' will be interpreted as State 6.
 // 
 // const int edges[][9] = {
 // 	               /* [0-9],  '.',  '*',  '/',  '+',  '-',  \n,  EOF,  ' '  */

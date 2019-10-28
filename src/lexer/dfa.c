@@ -46,7 +46,8 @@ DFA init_dfa() {
 	SETSTATE(S_DOT, I_NUMBER, S_FLOAT, NULL);
 	SETSTATE(S_FLOAT, I_NUMBER, S_FLOAT, NULL);
 	SETSTATE(S_MULTIPLICATION, I_ASTERISK, S_POWER, 
-		SETSTATE(S_MULTIPLICATION, I_SPACE, S_MULTIPLICATION, NULL));
+		SETSTATE(S_MULTIPLICATION, I_SPACE, S_MULT_SPACED, NULL));
+	SETSTATE(S_MULT_SPACED, I_SPACE, S_MULT_SPACED, NULL);
 	SETSTATE(S_POWER, I_SPACE, S_POWER, NULL);
 	SETSTATE(S_DIVISION, I_SPACE, S_DIVISION, NULL);
 	SETSTATE(S_PLUS, I_SPACE, S_PLUS, NULL);
@@ -60,6 +61,8 @@ DFA init_dfa() {
 int get_next_state(DFA dfa, DfaState current_state, char input) {
 	if (!dfa)
 		return -1;
+	if ((int)current_state >= dfa->states_count)
+		return 0;
 	
 	input = input >= '0' && input <= '9' ? I_NUMBER : input;
 
@@ -82,6 +85,7 @@ int is_final_state(DFA dfa, DfaState state) {
 	case S_INTEGER:
 	case S_FLOAT:
 	case S_MULTIPLICATION:
+	case S_MULT_SPACED:
 	case S_POWER:
 	case S_DIVISION:
 	case S_PLUS:
