@@ -1,4 +1,5 @@
 #include "lexer.h"
+#include "dfa.h"
 #include <string.h>
 #include <stdlib.h>
 
@@ -12,6 +13,7 @@ Lex lex_init(char *input) {
     
     lexer->is_closed = 0;
     lexer->read_head = 0;
+    lexer->state_machine = init_dfa();
 
     size_t length = strlen(input);
     lexer->source_code = (char *)malloc(sizeof(char) * (length + 1));

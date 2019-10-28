@@ -1,6 +1,7 @@
 #ifndef LEXER_GUARD_H
 #define LEXER_GUARD_H
 
+#include "dfa.h"
 #include <stdlib.h>
 
 // Type of a found token; used as its ID.
@@ -18,6 +19,8 @@ typedef enum {
 
 // Context of a self-sufficient instance of the lexical analyzer.
 typedef struct _LexerContext {
+    // A handle to an instance of the DFA.
+    DFA state_machine;
     // Source code of the input
     char *source_code;
     // Current position of the read-head in the source code
