@@ -51,6 +51,33 @@
                 "cmake tests"
             ],
             "dependsOrder": "sequence",
+            "group": "build",
+            "problemMatcher": {
+                "base": "$gcc",
+                "fileLocation": "absolute"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "cmake all",
+            "command": "/usr/bin/cmake",
+            "args": [
+                "-DCMAKE_BUILD_TYPE=Debug",
+                ".."
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/build/"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "make all",
+            "command": "/usr/bin/make",
+            "options": {
+                "cwd": "${workspaceFolder}/build/"
+            },
+            "dependsOn": "cmake all",
+            "dependsOrder": "sequence",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -64,7 +91,7 @@
             "type": "process",
             "label": "run tests",
             "command": "${workspaceFolder}/tests/build/tests",
-            "dependsOn": "make tests",
+            "dependsOn": "make all",
             "dependsOrder": "sequence",
             "group": {
                 "kind": "test",
