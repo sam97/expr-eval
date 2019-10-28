@@ -5,6 +5,7 @@
 #include <cmocka.h>
 #include <stdio.h>
 #include "dfa_tests.h"
+#include "lexer_tests.h"
 
 // Main function that is supposed to run all the tests at once.
 // Idea is to write test cases for each module in a separate file,
@@ -16,7 +17,9 @@ int main()
 	const struct CMUnitTest tests[] = {
 		cmocka_unit_test(test_dfa_init),
 		cmocka_unit_test(test_get_next_state),
-		cmocka_unit_test(test_is_final_state)
+		cmocka_unit_test(test_is_final_state),
+		
+		cmocka_unit_test(test_lexer_init)
 	};
 
 	cmocka_set_test_filter("test_*");

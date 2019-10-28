@@ -5,7 +5,7 @@ include_directories(./ ../src/)
 link_directories(../src/lexer/build)
 # set(CMAKE_PREFIX_PATH "../src/lexer/build/")
 
-add_executable(tests main.c dfa_tests.c)
+add_executable(tests main.c dfa_tests.c lexer_tests.c)
 # find_package(lexer NAMES liblexer PATHS ../src/lexer/build/)
 # find_package(LEXER_LIB NAMES lexer)
 target_link_libraries(tests lexer)
