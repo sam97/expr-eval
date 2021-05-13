@@ -1,6 +1,47 @@
 # expr-eval
 Expression Evaluator
 
+### Update 2021-05-13
+
+Here is some life advice to follow:
+
+- Don't use your employer's machine to work on personal projects.
+- Push your commits to the remote repo regularly. Yes, even if they're intermediary commits. You can clean them up later.
+- If you happen to use your employer's machine to work on personal projects, be sure to move them to your personal machine at the earliest.
+  - (Get a personal machine at the earliest.)
+- When you submit your employer's machine during exit, **make sure you've followed all of the advice above**!
+
+As you can imagine, I didn't.
+
+~~I'm archiving this project because~~ I lost more than a year's worth of commits. I was naive enough to work on it on my employer's machine, not push ~45 commits, forget to move the code once I had my personal PC built, and then return the machine thinking that I could always clone the code from GitHub (to which I hadn't pushed).
+
+The progress I'd made was amazing. Some of it is still availabe in the [v2 branch](../../tree/v2.0.0-alpha/):
+- I managed to move away from both MSVC and the one-file-structure.
+- I retargeted to MinGW GCC and reconfigured for VS Code (not the best IDE in hindsight, but it gets the job done).
+- I integrated CMake for a saner experience (although that is still debatable).
+- With a lot of courage and self-motivation, I finally added tests! (Although CMocka now seems a very average choice.)
+- I separated the lexer into its own library with its own tests.
+
+In the missing commits I'd gone pretty far:
+- The DFA was extracted from the lexer and made its own library to reuse in the parser.
+- Oh yes, the parser was almost complete. I recall that a few testcases were failing, but I'd finally understood and implemented a decent Pratt parser.
+- Small but time-taking optimisations, like token-folding (??) that I barely remember.
+- I had a very minimal AST going. No error-handling yet, but it was going somewhere.
+- Test cases. Lots and lots of test cases. For all the libraries.
+- A more complex CMake setup to account for individual and `all` builds, fine-tuned compiler configurations, and CMake Test.
+
+I had a lot planned, as well:
+- Valgrind was sorely needed. CMocka has some memory-leak detection, but it's very patchy and it didn't work as intended sometimes.
+- The original idea had mutated to build a Pratt-parser-generator that uses macros, using which the evaluator will be built, but I hadn't worked it out yet.
+- A better testing framework. CMocka was alright but memory leak detection was a pain point.
+- I'd even planned to build an interactive webpage for the evaluator using WASM. For learning purposes, obviously.
+
+I was going to archive this project because when I realised that a lot of my progress was gone I was completely discouraged. But as I write this I'm feeling hopeful that I can rebound with better quality. Let's see if I can manage that. (After I find a job, of course.)
+
+Lesson learnt: keep your work and personal projects separate.
+
+----
+
 This is a small-ish project I did for a course. The specification was quite broad:
 
  - Build an **expression evaluator** with the precedence order: `** > * > / > + > -` (`**` is a power operator).
